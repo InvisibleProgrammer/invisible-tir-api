@@ -1,0 +1,13 @@
+### Health Check
+
+GET {{base-url}}/actuator/health
+
+### User management - Sign up
+
+POST {{base-url}}/users
+Content-Type: application/json
+
+{
+  "email": "test@test.com",
+  "password": "littleStuff123"
+}
