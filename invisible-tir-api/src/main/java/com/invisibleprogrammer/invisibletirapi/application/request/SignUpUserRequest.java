@@ -1,4 +1,4 @@
-package com.invisibleprogrammer.invisibletirapi.users;
+package com.invisibleprogrammer.invisibletirapi.application.request;
 
 import lombok.Data;
 
