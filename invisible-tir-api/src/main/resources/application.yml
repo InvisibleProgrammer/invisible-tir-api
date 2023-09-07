@@ -12,6 +12,10 @@ spring:
     driverClassName: org.h2.Driver
   jpa:
     spring.jpa.database-platform: org.hibernate.dialect.H2Dialect
-# only for debugging purposes
+
+  jackson:
+    default-property-inclusion: non_absent  # For debugging, you can change it to get all the fields in API responses
+
 #  h2:
-#    console.enabled: true
+#    console.enabled: true  # You can get a browser based db management tool
+

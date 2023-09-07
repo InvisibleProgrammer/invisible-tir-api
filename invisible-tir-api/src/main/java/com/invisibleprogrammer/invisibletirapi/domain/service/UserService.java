@@ -2,6 +2,7 @@ package com.invisibleprogrammer.invisibletirapi.domain.service;
 
 import com.invisibleprogrammer.invisibletirapi.domain.User;
 import com.invisibleprogrammer.invisibletirapi.domain.repository.UserRepository;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,6 +15,12 @@ public class UserService {
     }
 
     public void signUp(String email, String password) {
-        userRepository.save(new User(email, password));
+
+        String apiKey = RandomStringUtils.randomAlphanumeric(20);
+
+        User newUser = new User(email, password, apiKey);
+
+        userRepository.save(newUser);
     }
 }
+
