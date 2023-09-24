@@ -2,10 +2,8 @@ package com.invisibleprogrammer.invisibletirapi.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import lombok.Data;
 
 @Entity(name = "tir_user")
-@Data
 public class User {
 
     @Id

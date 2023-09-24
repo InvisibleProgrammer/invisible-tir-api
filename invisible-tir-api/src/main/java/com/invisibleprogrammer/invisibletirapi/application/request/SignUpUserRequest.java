@@ -1,9 +1,15 @@
 package com.invisibleprogrammer.invisibletirapi.application.request;
 
-import lombok.Data;
-
-@Data
 public class SignUpUserRequest {
     public String email;
     public String password;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
 }
