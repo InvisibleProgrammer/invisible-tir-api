@@ -2,6 +2,9 @@
 
 GET {{base-url}}/actuator/health
 
+### Not found
+GET {{base-url}}/idontexists
+
 ### User management - Sign up
 
 POST {{base-url}}/users
