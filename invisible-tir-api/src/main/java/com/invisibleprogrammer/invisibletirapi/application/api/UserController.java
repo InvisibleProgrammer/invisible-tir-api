@@ -2,6 +2,7 @@ package com.invisibleprogrammer.invisibletirapi.application.api;
 
 import com.invisibleprogrammer.invisibletirapi.application.request.SignUpUserRequest;
 import com.invisibleprogrammer.invisibletirapi.application.response.SignUpUserResponse;
+import com.invisibleprogrammer.invisibletirapi.domain.User;
 import com.invisibleprogrammer.invisibletirapi.domain.service.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,9 +23,9 @@ public class UserController {
     @PostMapping()
     public SignUpUserResponse signUp(@RequestBody SignUpUserRequest userRequest) {
 
-        usersService.signUp(userRequest.getEmail(), userRequest.getPassword());
+        User newUser = usersService.signUp(userRequest.getEmail(), userRequest.getPassword());
 
-        return new SignUpUserResponse(userRequest.getEmail(), "MEMBER");
+        return new SignUpUserResponse(userRequest.getEmail(), "MEMBER", newUser.getApiKeys().get(0).getApiKey());
     }
 
 }
