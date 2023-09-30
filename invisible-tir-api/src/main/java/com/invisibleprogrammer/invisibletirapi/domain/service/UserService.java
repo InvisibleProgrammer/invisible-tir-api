@@ -21,13 +21,10 @@ public class UserService {
     }
 
     public User signUp(String email, String password) {
-
-        String apiKey = RandomStringUtils.randomAlphanumeric(20);
-
         User newUser = new User(email, password);
-
         newUser = userRepository.save(newUser);
 
+        String apiKey = RandomStringUtils.randomAlphanumeric(20);
         ApiKey userApiKey = new ApiKey(apiKey, newUser);
         apiKeyRepository.save(userApiKey);
 
