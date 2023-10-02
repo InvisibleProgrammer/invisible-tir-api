@@ -16,7 +16,7 @@ public class ApiExceptionHandler {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body("""
                         {
-                          "statusCode": 404,
+                          "code": 404,
                           "type": "NOT_FOUND",
                           "message": "Service not found"
                         }""");
