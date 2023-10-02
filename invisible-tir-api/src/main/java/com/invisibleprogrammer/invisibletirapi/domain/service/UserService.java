@@ -20,7 +20,11 @@ public class UserService {
         this.apiKeyRepository = apiKeyRepository;
     }
 
-    public User signUp(String email, String password) {
+    public User signUp(String email, String password) throws UserAlreadyExistsException {
+        if (userRepository.existsUserByEmailAddress(email)) {
+            throw new UserAlreadyExistsException();
+        }
+
         User newUser = new User(email, password);
         newUser = userRepository.save(newUser);
 

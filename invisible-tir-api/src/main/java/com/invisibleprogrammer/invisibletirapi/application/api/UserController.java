@@ -3,6 +3,7 @@ package com.invisibleprogrammer.invisibletirapi.application.api;
 import com.invisibleprogrammer.invisibletirapi.application.request.SignUpUserRequest;
 import com.invisibleprogrammer.invisibletirapi.application.response.SignUpUserResponse;
 import com.invisibleprogrammer.invisibletirapi.domain.User;
+import com.invisibleprogrammer.invisibletirapi.domain.service.UserAlreadyExistsException;
 import com.invisibleprogrammer.invisibletirapi.domain.service.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,9 +24,13 @@ public class UserController {
     @PostMapping()
     public SignUpUserResponse signUp(@RequestBody SignUpUserRequest userRequest) {
 
-        User newUser = usersService.signUp(userRequest.getEmail(), userRequest.getPassword());
+        try {
+            User newUser = usersService.signUp(userRequest.getEmail(), userRequest.getPassword());
+            return new SignUpUserResponse(userRequest.getEmail(), "MEMBER", newUser.getApiKeys().get(0).getApiKey());
+        } catch (UserAlreadyExistsException e) {
+            throw new RuntimeException(e);
+        }
 
-        return new SignUpUserResponse(userRequest.getEmail(), "MEMBER", newUser.getApiKeys().get(0).getApiKey());
     }
 
 }
