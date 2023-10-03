@@ -5,6 +5,7 @@ import com.invisibleprogrammer.invisibletirapi.application.api.UserController;
 import com.invisibleprogrammer.invisibletirapi.application.response.SignUpUserResponse;
 import com.invisibleprogrammer.invisibletirapi.domain.ApiKey;
 import com.invisibleprogrammer.invisibletirapi.domain.User;
+import com.invisibleprogrammer.invisibletirapi.domain.service.UserAlreadyExistsException;
 import com.invisibleprogrammer.invisibletirapi.domain.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -68,5 +70,29 @@ public class UserControllerTests {
         assertEquals(email, signUpUserResponse.getEmail());
         assertEquals("MEMBER", signUpUserResponse.getRole());
         assertEquals(apiKey, signUpUserResponse.getApiKey());
+    }
+
+    @Test
+    public void createUser_alreadyExists_returnsWith_BadRequest() throws Exception {
+        Mockito.when(userService.signUp(anyString(), anyString())).thenThrow(UserAlreadyExistsException.class);
+
+        String payload = """
+                {
+                    "email": "test@test.com",
+                    "password": "P@ssword123"
+                }""";
+
+        String expectedResponse = """
+                {
+                  "code": 400,
+                  "type": "BAD_REQUEST",
+                  "message": "E-mail already exists"
+                }""";
+
+        mockMvc.perform(post("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload)
+                ).andExpect(status().isBadRequest())
+                .andExpect(content().string(expectedResponse));
     }
 }
