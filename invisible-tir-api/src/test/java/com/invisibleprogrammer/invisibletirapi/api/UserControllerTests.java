@@ -5,6 +5,7 @@ import com.invisibleprogrammer.invisibletirapi.application.api.UserController;
 import com.invisibleprogrammer.invisibletirapi.application.response.SignUpUserResponse;
 import com.invisibleprogrammer.invisibletirapi.domain.ApiKey;
 import com.invisibleprogrammer.invisibletirapi.domain.User;
+import com.invisibleprogrammer.invisibletirapi.domain.service.InvalidPasswordException;
 import com.invisibleprogrammer.invisibletirapi.domain.service.UserAlreadyExistsException;
 import com.invisibleprogrammer.invisibletirapi.domain.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -93,6 +94,30 @@ public class UserControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload)
                 ).andExpect(status().isBadRequest())
+                .andExpect(content().string(expectedResponse));
+    }
+
+    @Test
+    public void createUser_invalidPassword_returnsWith_BadRequest() throws Exception {
+        Mockito.when(userService.signUp(anyString(), anyString())).thenThrow(InvalidPasswordException.class);
+
+        String payload = """
+                {
+                    "email": "test@test.com",
+                    "password": "password"
+                }""";
+
+        String expectedResponse = """
+                {
+                  "code": 422,
+                  "type": "UNPROCESSABLE_ENTITY",
+                  "message": "The password must be at least 10 characters, contains numeric characters, minimum 1 uppercase letter [A-Z] and minimum 1 special character"
+                }""";
+
+        mockMvc.perform(post("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload)
+                ).andExpect(status().isUnprocessableEntity())
                 .andExpect(content().string(expectedResponse));
     }
 }

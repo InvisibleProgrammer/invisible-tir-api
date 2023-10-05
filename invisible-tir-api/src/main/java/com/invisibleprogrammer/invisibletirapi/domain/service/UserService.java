@@ -1,6 +1,7 @@
 package com.invisibleprogrammer.invisibletirapi.domain.service;
 
 import com.invisibleprogrammer.invisibletirapi.domain.ApiKey;
+import com.invisibleprogrammer.invisibletirapi.domain.PasswordValidator;
 import com.invisibleprogrammer.invisibletirapi.domain.User;
 import com.invisibleprogrammer.invisibletirapi.domain.repository.ApiKeyRepository;
 import com.invisibleprogrammer.invisibletirapi.domain.repository.UserRepository;
@@ -14,13 +15,19 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final ApiKeyRepository apiKeyRepository;
+    private final PasswordValidator passwordValidator;
 
-    public UserService(UserRepository userRepository, ApiKeyRepository apiKeyRepository) {
+    public UserService(UserRepository userRepository, ApiKeyRepository apiKeyRepository, PasswordValidator passwordValidator) {
         this.userRepository = userRepository;
         this.apiKeyRepository = apiKeyRepository;
+        this.passwordValidator = passwordValidator;
     }
 
-    public User signUp(String email, String password) throws UserAlreadyExistsException {
+    public User signUp(String email, String password) throws UserAlreadyExistsException, InvalidPasswordException {
+        if (!passwordValidator.isValid(password)) {
+            throw new InvalidPasswordException();
+        }
+
         if (userRepository.existsUserByEmailAddress(email)) {
             throw new UserAlreadyExistsException();
         }

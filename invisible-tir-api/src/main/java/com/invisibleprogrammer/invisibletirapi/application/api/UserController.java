@@ -3,6 +3,7 @@ package com.invisibleprogrammer.invisibletirapi.application.api;
 import com.invisibleprogrammer.invisibletirapi.application.request.SignUpUserRequest;
 import com.invisibleprogrammer.invisibletirapi.application.response.SignUpUserResponse;
 import com.invisibleprogrammer.invisibletirapi.domain.User;
+import com.invisibleprogrammer.invisibletirapi.domain.service.InvalidPasswordException;
 import com.invisibleprogrammer.invisibletirapi.domain.service.UserAlreadyExistsException;
 import com.invisibleprogrammer.invisibletirapi.domain.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,13 @@ public class UserController {
                       "code": 400,
                       "type": "BAD_REQUEST",
                       "message": "E-mail already exists"
+                    }""");
+        } catch (InvalidPasswordException e) {
+            return ResponseEntity.unprocessableEntity().body("""
+                    {
+                      "code": 422,
+                      "type": "UNPROCESSABLE_ENTITY",
+                      "message": "The password must be at least 10 characters, contains numeric characters, minimum 1 uppercase letter [A-Z] and minimum 1 special character"
                     }""");
         }
 
