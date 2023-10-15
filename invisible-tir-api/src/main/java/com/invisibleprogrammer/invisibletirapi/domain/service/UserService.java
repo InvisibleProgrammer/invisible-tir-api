@@ -6,6 +6,7 @@ import com.invisibleprogrammer.invisibletirapi.domain.User;
 import com.invisibleprogrammer.invisibletirapi.domain.repository.ApiKeyRepository;
 import com.invisibleprogrammer.invisibletirapi.domain.repository.UserRepository;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -16,11 +17,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final ApiKeyRepository apiKeyRepository;
     private final PasswordValidator passwordValidator;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UserService(UserRepository userRepository, ApiKeyRepository apiKeyRepository, PasswordValidator passwordValidator) {
+    public UserService(UserRepository userRepository, ApiKeyRepository apiKeyRepository, PasswordValidator passwordValidator, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
         this.apiKeyRepository = apiKeyRepository;
         this.passwordValidator = passwordValidator;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     public User signUp(String email, String password) throws UserAlreadyExistsException, InvalidPasswordException {
@@ -33,8 +36,9 @@ public class UserService {
         }
 
         String apiKey = RandomStringUtils.randomAlphanumeric(20);
+        String passwordHash = bCryptPasswordEncoder.encode(password);
 
-        User newUser = new User(email, password);
+        User newUser = new User(email, passwordHash);
         newUser = userRepository.save(newUser);
 
         ApiKey userApiKey = new ApiKey(apiKey, newUser);

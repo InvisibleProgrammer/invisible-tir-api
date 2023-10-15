@@ -12,13 +12,13 @@ public class User {
     @Column(name = "user_id")
     private int id;
     private String emailAddress;
-    private String password;
+    private String passwordHash;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ApiKey> apiKeys;
 
     public User(String emailAddress, String password) {
         this.emailAddress = emailAddress;
-        this.password = password;
+        this.passwordHash = password;
     }
 
     public User() {
@@ -41,12 +41,12 @@ public class User {
         this.emailAddress = emailAddress;
     }
 
-    public String getPassword() {
-        return password;
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPasswordHash(String password) {
+        this.passwordHash = password;
     }
 
     public List<ApiKey> getApiKeys() {

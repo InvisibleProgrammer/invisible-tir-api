@@ -20,6 +20,9 @@ spring:
   jackson:
     default-property-inclusion: non_absent  # For debugging, you can change it to get all the fields in API responses
 
+# debug spring security
+#    org.springframework.security: TRACE
+
 #  h2:
 #    console.enabled: true  # You can get a browser based db management tool
 

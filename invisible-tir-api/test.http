@@ -12,5 +12,15 @@ Content-Type: application/json
 
 {
   "email": "test@test.com",
-  "password": "littleStuff123"
+  "password": "!littleStuff123_!"
+}
+
+### User management - Sign up - Invalid password
+
+POST {{base-url}}/users
+Content-Type: application/json
+
+{
+  "email": "test@test.com",
+  "password": "123"
 }
