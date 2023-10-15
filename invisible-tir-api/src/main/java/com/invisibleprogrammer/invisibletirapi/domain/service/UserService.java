@@ -39,4 +39,15 @@ public class UserService {
 
         return newUser;
     }
+
+    public User signIn(String email, String password) throws WrongCredentialsException {
+        User user = userRepository
+                .findUserByEmailAddress(email)
+                .orElseThrow(WrongCredentialsException::new);
+
+        if (!bCryptPasswordEncoder.matches(password, user.getPasswordHash()))
+            throw new WrongCredentialsException();
+
+        return user;
+    }
 }
