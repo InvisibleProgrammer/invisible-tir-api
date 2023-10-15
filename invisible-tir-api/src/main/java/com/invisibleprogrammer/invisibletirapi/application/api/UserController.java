@@ -1,11 +1,12 @@
 package com.invisibleprogrammer.invisibletirapi.application.api;
 
-import com.invisibleprogrammer.invisibletirapi.application.request.SignUpUserRequest;
-import com.invisibleprogrammer.invisibletirapi.application.response.SignUpUserResponse;
+import com.invisibleprogrammer.invisibletirapi.application.request.UserRequest;
+import com.invisibleprogrammer.invisibletirapi.application.response.UserResponse;
 import com.invisibleprogrammer.invisibletirapi.domain.User;
 import com.invisibleprogrammer.invisibletirapi.domain.service.InvalidPasswordException;
 import com.invisibleprogrammer.invisibletirapi.domain.service.UserAlreadyExistsException;
 import com.invisibleprogrammer.invisibletirapi.domain.service.UserService;
+import com.invisibleprogrammer.invisibletirapi.domain.service.WrongCredentialsException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,11 +25,11 @@ public class UserController {
     }
 
     @PostMapping()
-    public ResponseEntity<?> signUp(@RequestBody SignUpUserRequest userRequest) {
+    public ResponseEntity<?> signUp(@RequestBody UserRequest userRequest) {
 
         try {
             User newUser = usersService.signUp(userRequest.getEmail(), userRequest.getPassword());
-            return ResponseEntity.ok(new SignUpUserResponse(userRequest.getEmail(), "MEMBER", newUser.getApiKey()));
+            return ResponseEntity.ok(new UserResponse(userRequest.getEmail(), "MEMBER", newUser.getApiKey()));
 
         } catch (UserAlreadyExistsException e) {
             return ResponseEntity.badRequest().body("""
@@ -48,4 +49,21 @@ public class UserController {
 
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<?> signIn(@RequestBody UserRequest userRequest) {
+
+        try {
+            User user = usersService.signIn(userRequest.getEmail(), userRequest.getPassword());
+            return ResponseEntity.ok(new UserResponse(userRequest.getEmail(), user.getFullName(), user.getBio(), user.getApiKey(), "MEMBER"));
+
+        } catch (WrongCredentialsException e) {
+            return ResponseEntity.unprocessableEntity().body("""
+                    {
+                      "code": 422,
+                      "type": "UNPROCESSABLE_ENTITY",
+                      "message": "Invalid e-mail or password"
+                    }""");
+        }
+
+    }
 }

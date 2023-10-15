@@ -2,11 +2,12 @@ package com.invisibleprogrammer.invisibletirapi.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.invisibleprogrammer.invisibletirapi.application.api.UserController;
-import com.invisibleprogrammer.invisibletirapi.application.response.SignUpUserResponse;
+import com.invisibleprogrammer.invisibletirapi.application.response.UserResponse;
 import com.invisibleprogrammer.invisibletirapi.domain.User;
 import com.invisibleprogrammer.invisibletirapi.domain.service.InvalidPasswordException;
 import com.invisibleprogrammer.invisibletirapi.domain.service.UserAlreadyExistsException;
 import com.invisibleprogrammer.invisibletirapi.domain.service.UserService;
+import com.invisibleprogrammer.invisibletirapi.domain.service.WrongCredentialsException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -64,12 +65,12 @@ public class UserControllerTests {
 
         String response = mvcResult.getResponse().getContentAsString();
         ObjectMapper objectMapper = new ObjectMapper();
-        SignUpUserResponse signUpUserResponse = objectMapper.readValue(response, SignUpUserResponse.class);
+        UserResponse userResponse = objectMapper.readValue(response, UserResponse.class);
 
-        assertNotNull(signUpUserResponse);
-        assertEquals(email, signUpUserResponse.getEmail());
-        assertEquals("MEMBER", signUpUserResponse.getRole());
-        assertEquals(apiKey, signUpUserResponse.getApiKey());
+        assertNotNull(userResponse);
+        assertEquals(email, userResponse.getEmail());
+        assertEquals("MEMBER", userResponse.getRole());
+        assertEquals(apiKey, userResponse.getApiKey());
     }
 
     @Test
@@ -97,7 +98,7 @@ public class UserControllerTests {
     }
 
     @Test
-    public void createUser_invalidPassword_returnsWith_BadRequest() throws Exception {
+    public void createUser_invalidPassword_returnsWith_UnprocessableEntity() throws Exception {
         Mockito.when(userService.signUp(anyString(), anyString())).thenThrow(InvalidPasswordException.class);
 
         String payload = """
@@ -119,4 +120,65 @@ public class UserControllerTests {
                 ).andExpect(status().isUnprocessableEntity())
                 .andExpect(content().string(expectedResponse));
     }
+
+    @Test
+    public void signIn_success_Ok() throws Exception {
+        String email = "test@codeyard.eu";
+        String fullName = "Imre Ujlaki";
+        String bio = "Lorem ipsum dolor sit amet";
+        String password = "P@ssword123";
+        String apiKey = "123abc";
+
+        User user = new User(1, email, fullName, bio, password, apiKey);
+
+        Mockito.when(userService.signIn(anyString(), anyString())).thenReturn(user);
+
+        String payload = """
+                {
+                    "email": "test@codeyard.eu",
+                    "password": "P@ssword123"
+                }""";
+
+        MvcResult mvcResult = mockMvc.perform(post("/users/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload)
+                ).andExpect(status().isOk())
+                .andReturn();
+
+        String response = mvcResult.getResponse().getContentAsString();
+        ObjectMapper objectMapper = new ObjectMapper();
+        UserResponse userResponse = objectMapper.readValue(response, UserResponse.class);
+
+        assertNotNull(userResponse);
+        assertEquals(email, userResponse.getEmail());
+        assertEquals(fullName, userResponse.getFullName());
+        assertEquals(bio, userResponse.getBio());
+        assertEquals("MEMBER", userResponse.getRole());
+        assertEquals(apiKey, userResponse.getApiKey());
+    }
+
+    @Test
+    public void singInUser_wrongCredentials_UnprocessableEntity() throws Exception {
+        Mockito.when(userService.signIn(anyString(), anyString())).thenThrow(WrongCredentialsException.class);
+
+        String payload = """
+                {
+                    "email": "test@test.com",
+                    "password": "password"
+                }""";
+
+        String expectedResponse = """
+                {
+                  "code": 422,
+                  "type": "UNPROCESSABLE_ENTITY",
+                  "message": "Invalid e-mail or password"
+                }""";
+
+        mockMvc.perform(post("/users/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload)
+                ).andExpect(status().isUnprocessableEntity())
+                .andExpect(content().string(expectedResponse));
+    }
+
 }

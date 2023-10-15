@@ -1,6 +1,6 @@
 package com.invisibleprogrammer.invisibletirapi.application.request;
 
-public class SignUpUserRequest {
+public class UserRequest {
     public String email;
     public String password;
 

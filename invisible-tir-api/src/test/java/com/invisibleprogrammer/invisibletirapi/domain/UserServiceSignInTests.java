@@ -13,8 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -53,5 +52,23 @@ public class UserServiceSignInTests {
         assertEquals(apiKey, loggedInUser.getApiKey());
 
         verify(bCryptPasswordEncoder, times(1)).matches(eq(password), anyString());
+    }
+
+    @Test
+    void signIn_wrongEmail() {
+        when(userRepository.findUserByEmailAddress(anyString())).thenReturn(Optional.empty());
+
+        assertThrows(WrongCredentialsException.class, () -> userService.signIn(email, password));
+    }
+
+    @Test
+    void signIn_wrongPassword() {
+        String apiKey = "123abc";
+        var user = new User(email, password, apiKey);
+        user.setId(1);
+        when(userRepository.findUserByEmailAddress(anyString())).thenReturn(Optional.of(user));
+        when(bCryptPasswordEncoder.matches(anyString(), anyString())).thenReturn(false);
+
+        assertThrows(WrongCredentialsException.class, () -> userService.signIn(email, password));
     }
 }
