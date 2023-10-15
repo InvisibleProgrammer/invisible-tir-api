@@ -1,27 +1,21 @@
 package com.invisibleprogrammer.invisibletirapi.domain.service;
 
-import com.invisibleprogrammer.invisibletirapi.domain.ApiKey;
 import com.invisibleprogrammer.invisibletirapi.domain.PasswordValidator;
 import com.invisibleprogrammer.invisibletirapi.domain.User;
-import com.invisibleprogrammer.invisibletirapi.domain.repository.ApiKeyRepository;
 import com.invisibleprogrammer.invisibletirapi.domain.repository.UserRepository;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Component
 public class UserService {
 
     private final UserRepository userRepository;
-    private final ApiKeyRepository apiKeyRepository;
     private final PasswordValidator passwordValidator;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UserService(UserRepository userRepository, ApiKeyRepository apiKeyRepository, PasswordValidator passwordValidator, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserService(UserRepository userRepository, PasswordValidator passwordValidator, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
-        this.apiKeyRepository = apiKeyRepository;
         this.passwordValidator = passwordValidator;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
@@ -38,16 +32,10 @@ public class UserService {
         String apiKey = RandomStringUtils.randomAlphanumeric(20);
         String passwordHash = bCryptPasswordEncoder.encode(password);
 
-        User newUser = new User(email, passwordHash);
+        User newUser = new User(email, passwordHash, apiKey);
         newUser = userRepository.save(newUser);
 
-        ApiKey userApiKey = new ApiKey(apiKey, newUser);
-        apiKeyRepository.save(userApiKey);
-
-        newUser.setApiKeys(List.of(userApiKey));
-
         userRepository.flush();
-        apiKeyRepository.flush();
 
         return newUser;
     }

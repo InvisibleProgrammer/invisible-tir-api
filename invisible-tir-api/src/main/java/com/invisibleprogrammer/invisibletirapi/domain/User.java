@@ -2,8 +2,6 @@ package com.invisibleprogrammer.invisibletirapi.domain;
 
 import jakarta.persistence.*;
 
-import java.util.List;
-
 @Entity(name = "tir_user")
 public class User {
 
@@ -13,12 +11,12 @@ public class User {
     private int id;
     private String emailAddress;
     private String passwordHash;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ApiKey> apiKeys;
+    private String apiKey;
 
-    public User(String emailAddress, String password) {
+    public User(String emailAddress, String password, String apiKey) {
         this.emailAddress = emailAddress;
         this.passwordHash = password;
+        this.apiKey = apiKey;
     }
 
     public User() {
@@ -49,11 +47,11 @@ public class User {
         this.passwordHash = password;
     }
 
-    public List<ApiKey> getApiKeys() {
-        return apiKeys;
+    public String getApiKey() {
+        return apiKey;
     }
 
-    public void setApiKeys(List<ApiKey> apiKey) {
-        this.apiKeys = apiKey;
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
     }
 }

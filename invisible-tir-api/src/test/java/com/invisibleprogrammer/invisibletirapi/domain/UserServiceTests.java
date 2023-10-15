@@ -1,6 +1,5 @@
 package com.invisibleprogrammer.invisibletirapi.domain;
 
-import com.invisibleprogrammer.invisibletirapi.domain.repository.ApiKeyRepository;
 import com.invisibleprogrammer.invisibletirapi.domain.repository.UserRepository;
 import com.invisibleprogrammer.invisibletirapi.domain.service.InvalidPasswordException;
 import com.invisibleprogrammer.invisibletirapi.domain.service.UserAlreadyExistsException;
@@ -29,8 +28,6 @@ public class UserServiceTests {
     @Mock
     private static UserRepository userRepository;
     @Mock
-    private static ApiKeyRepository apiKeyRepository;
-    @Mock
     private static PasswordValidator passwordValidator;
     @Spy
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -40,25 +37,22 @@ public class UserServiceTests {
 
     @BeforeEach
     public void setup() {
-        userService = new UserService(userRepository, apiKeyRepository, passwordValidator, bCryptPasswordEncoder);
+        userService = new UserService(userRepository, passwordValidator, bCryptPasswordEncoder);
         when(passwordValidator.isValid(anyString())).thenReturn(true);
     }
 
     @Test
     public void signUp_success() throws UserAlreadyExistsException, InvalidPasswordException {
-        var newUser = new User(email, password);
+        String apiKey = "123abc";
+        var newUser = new User(email, password, apiKey);
         newUser.setId(1);
         when(userRepository.save(any())).thenReturn(newUser);
 
         var createdUser = userService.signUp(email, password);
 
-        assertEquals(newUser.getId(), createdUser.getId());
         assertNotNull(createdUser);
-
-        verify(apiKeyRepository, times(1)).save(any());
-        var apiKeys = createdUser.getApiKeys();
-        assertEquals(1, apiKeys.size());
-        assertNotNull(apiKeys.get(0));
+        assertEquals(newUser.getId(), createdUser.getId());
+        assertEquals(apiKey, createdUser.getApiKey());
 
         verify(bCryptPasswordEncoder, times(1)).encode(anyString());
     }

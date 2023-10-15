@@ -28,7 +28,7 @@ public class UserController {
 
         try {
             User newUser = usersService.signUp(userRequest.getEmail(), userRequest.getPassword());
-            return ResponseEntity.ok(new SignUpUserResponse(userRequest.getEmail(), "MEMBER", newUser.getApiKeys().get(0).getApiKey()));
+            return ResponseEntity.ok(new SignUpUserResponse(userRequest.getEmail(), "MEMBER", newUser.getApiKey()));
 
         } catch (UserAlreadyExistsException e) {
             return ResponseEntity.badRequest().body("""

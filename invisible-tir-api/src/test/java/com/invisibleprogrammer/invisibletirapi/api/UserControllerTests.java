@@ -3,7 +3,6 @@ package com.invisibleprogrammer.invisibletirapi.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.invisibleprogrammer.invisibletirapi.application.api.UserController;
 import com.invisibleprogrammer.invisibletirapi.application.response.SignUpUserResponse;
-import com.invisibleprogrammer.invisibletirapi.domain.ApiKey;
 import com.invisibleprogrammer.invisibletirapi.domain.User;
 import com.invisibleprogrammer.invisibletirapi.domain.service.InvalidPasswordException;
 import com.invisibleprogrammer.invisibletirapi.domain.service.UserAlreadyExistsException;
@@ -19,8 +18,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -42,14 +39,14 @@ public class UserControllerTests {
     UserService userService;
 
     @Test
-    public void createUser_returnsWith_OK() throws Exception {
+    public void createUser_success_Ok() throws Exception {
         String email = "test@test.com";
         String password = "P@ssword123";
         String apiKey = "123abc";
 
-        User newUser = new User(email, password);
+        User newUser = new User(email, password, apiKey);
         newUser.setId(1);
-        newUser.setApiKeys(List.of(new ApiKey(apiKey, newUser)));
+        newUser.setApiKey(apiKey);
 
         Mockito.when(userService.signUp(anyString(), anyString())).thenReturn(newUser);
 
