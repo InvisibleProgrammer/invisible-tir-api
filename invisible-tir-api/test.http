@@ -24,3 +24,21 @@ Content-Type: application/json
   "email": "test@test.com",
   "password": "123"
 }
+
+### User management - Sign In - success
+## Note: run sign-up first
+
+POST {{base-url}}/users/login
+Content-Type: application/json
+
+{
+  "email": "test@test.com",
+  "password": "!littleStuff123_!"
+}
+
+### Me (get user details)
+## Api key: get from a login/sign-up request
+
+GET {{base-url}}//users/me
+x-access-token: dAtAwbXQOqkzsbxCvgm0
+

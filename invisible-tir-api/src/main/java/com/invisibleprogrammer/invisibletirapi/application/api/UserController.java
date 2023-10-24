@@ -7,11 +7,9 @@ import com.invisibleprogrammer.invisibletirapi.domain.service.InvalidPasswordExc
 import com.invisibleprogrammer.invisibletirapi.domain.service.UserAlreadyExistsException;
 import com.invisibleprogrammer.invisibletirapi.domain.service.UserService;
 import com.invisibleprogrammer.invisibletirapi.domain.service.WrongCredentialsException;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
@@ -32,14 +30,18 @@ public class UserController {
             return ResponseEntity.ok(new UserResponse(userRequest.getEmail(), "MEMBER", newUser.getApiKey()));
 
         } catch (UserAlreadyExistsException e) {
-            return ResponseEntity.badRequest().body("""
+            return ResponseEntity.badRequest()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("""
                     {
                       "code": 400,
                       "type": "BAD_REQUEST",
                       "message": "E-mail already exists"
                     }""");
         } catch (InvalidPasswordException e) {
-            return ResponseEntity.unprocessableEntity().body("""
+            return ResponseEntity.unprocessableEntity()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("""
                     {
                       "code": 422,
                       "type": "UNPROCESSABLE_ENTITY",
@@ -65,5 +67,10 @@ public class UserController {
                     }""");
         }
 
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getUserProfile() {
+        return ResponseEntity.ok("ok");
     }
 }
